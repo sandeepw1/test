@@ -57,7 +57,16 @@ sudo sed -i 's|var RULE_PATH.*|var RULE_PATH /etc/snort/rules|' /etc/snort/snort
 sudo sed -i 's|var SO_RULE_PATH.*|var SO_RULE_PATH /etc/snort/so_rules|' /etc/snort/snort.conf
 sudo sed -i 's|var PREPROC_RULE_PATH.*|var PREPROC_RULE_PATH /etc/snort/preproc_rules|' /etc/snort/snort.conf
 sudo sed -i 's|var WHITE_LIST_PATH.*|var WHITE_LIST_PATH /etc/snort/rules|' /etc/snort/snort.conf
-sudo sed -i |var BLACK_LIST_PATH.*| var BLACK_LIST_PATH /etc/snort/rules|' /etc/snort/snort.conf
+sudo sed -i 's|var BLACK_LIST_PATH.*|var BLACK_LIST_PATH /etc/snort/rules|' /etc/snort/snort.conf
+sudo sed -i '548,651s/^/#/' /etc/snort/snort.conf 
+sudo snort -T -c /etc/snort/snort.conf &> /dev/null
+if [ $? = 0 ]
+then
+echo "Snort Installed and Configured Successfully"
+else 
+echo "Please Check error at the end"
+sudo snort -T -c /etc/snort/snort.conf 
+fi
 
 
 
