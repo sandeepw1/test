@@ -51,7 +51,7 @@ sudo touch /etc/snort/rules/black_list.rules
 sudo touch /etc/snort/rules/local.rules
 echo "Please Enter your network address: "
 read net
-sudo sed -i 's/^ipvar HOME_NET any/ipvar HOME_NET $net\/24/' /etc/snort/snort.conf
+sudo sed -i 's|^ipvar HOME_NET any|ipvar HOME_NET $net/24|' /etc/snort/snort.conf
 sudo sed -i 's/^ipvar EXTERNAL_NET any/ipvar EXTERNAL_NET !$HOME_NET/' /etc/snort/snort.conf
 sudo sed -i 's|var RULE_PATH.*|var RULE_PATH /etc/snort/rules|' /etc/snort/snort.conf
 sudo sed -i 's|var SO_RULE_PATH.*|var SO_RULE_PATH /etc/snort/so_rules|' /etc/snort/snort.conf
@@ -66,6 +66,7 @@ echo "Snort Installed and Configured Successfully"
 else 
 echo "Please Check error at the end"
 sudo snort -T -c /etc/snort/snort.conf 
+break
 fi
 echo "##################################"
 echo "Testing snort by adding a demo rule"
@@ -86,11 +87,12 @@ echo "Now start adding your own rules in /etc/snort/rules/local.rules file"
 sleep 5
 else 
 echo "Error!!!Please run Snort manually and check"
+break
 fi
 echo "####################################"
 echo "Adding snort as a service"
 sleep 5
-sudo vi /etc/systemd/system/snort.service
+sudo touch /etc/systemd/system/snort.service
 echo "[Unit]" | sudo tee /etc/systemd/system/snort.service
 echo "Description=Snort 2.9 IDS/IPS" | sudo tee -a /etc/systemd/system/snort.service
 echo "After=network.target" | sudo tee -a /etc/systemd/system/snort.service
