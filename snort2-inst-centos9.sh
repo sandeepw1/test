@@ -67,6 +67,60 @@ else
 echo "Please Check error at the end"
 sudo snort -T -c /etc/snort/snort.conf 
 fi
+echo "##################################"
+echo "Testing snort by adding a demo rule"
+echo "####################################"
+sleep 5
+echo "alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Test Ping";sid:1000001;)" | sudo tee /etc/snort/rules/local.rules
+echo "Please enter the interface to monitor:"
+read iface
+sudo snort -A console -i $iface -c /etc/snort/snort.conf &> ~/test.log
+ping -c 3 8.8.8.8 &> /dev/null
+cat ~/test.log | grep Test &> /dev/null
+if [ $? = 0 ]
+then
+sudo pkill snort
+echo "###################################"
+echo "The snort is working properly"
+echo "Now start adding your own rules in /etc/snort/rules/local.rules file"
+sleep 5
+else 
+echo "Error!!!Please run Snort manually and check"
+fi
+echo "####################################"
+echo "Adding snort as a service"
+sleep 5
+sudo vi /etc/systemd/system/snort.service
+echo "[Unit]" | sudo tee /etc/systemd/system/snort.service
+echo "Description=Snort 2.9 IDS/IPS" | sudo tee -a /etc/systemd/system/snort.service
+echo "After=network.target" | sudo tee -a /etc/systemd/system/snort.service
+echo "" | sudo tee -a /etc/systemd/system/snort.service
+echo "" | sudo tee -a /etc/systemd/system/snort.service
+echo "[Service]" | sudo tee -a /etc/systemd/system/snort.service
+echo "Type=simple" | sudo tee -a /etc/systemd/system/snort.service
+echo "User=root" | sudo tee -a /etc/systemd/system/snort.service
+echo "Group=root" | sudo tee -a /etc/systemd/system/snort.service
+echo "ExecStart=/usr/sbin/snort -A fast -D -q -c /etc/snort/snort.conf -i ens160" | sudo tee -a /etc/systemd/system/snort.service 
+echo "ExecStop=/bin/kill -SIGINT $MAINPID" | sudo tee -a /etc/systemd/system/snort.service
+echo "Restart=on-failure" | sudo tee -a /etc/systemd/system/snort.service
+echo "" | sudo tee -a /etc/systemd/system/snort.service
+echo "" | sudo tee -a /etc/systemd/system/snort.service
+echo "[Install]" | sudo tee -a /etc/systemd/system/snort.service
+echo "WantedBy=multi-user.target" | sudo tee -a /etc/systemd/system/snort.service
+
+sudo systemctl daemon-reload
+sudo systemctl start snort
+sudo systemctl status snort &> /dev/null
+if [ $? = 0 ]
+then
+sudo systemctl enable snort &> /dev/null
+echo "Snort is installed as a service."
+echo "Snort is up and running"
+sleep 5
+echo "Installation is complete!!!"
+else
+echo "Snort service failed....Check manually"
+fi
 
 
 
