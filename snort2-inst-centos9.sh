@@ -75,9 +75,9 @@ sleep 5
 echo 'alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Test Ping";sid:1000001;)' | sudo tee /etc/snort/rules/local.rules
 echo "Please enter the interface to monitor:"
 read iface
-sudo snort -A console -i $iface -c /etc/snort/snort.conf &> ~/test.log
-ping -c 3 8.8.8.8 &> /dev/null
-cat ~/test.log | grep Test &> /dev/null
+sudo snort -D -q -A fast  -c /etc/snort/snort.conf -K ascii -l ~  &> /dev/null
+ping -c 2 8.8.8.8 &> /dev/null
+cat ~/alert | grep "Test Ping" &> /dev/null
 if [ $? = 0 ]
 then
 sudo pkill snort
@@ -103,7 +103,7 @@ echo "Type=simple" | sudo tee -a /etc/systemd/system/snort.service
 echo "User=root" | sudo tee -a /etc/systemd/system/snort.service
 echo "Group=root" | sudo tee -a /etc/systemd/system/snort.service
 echo "ExecStart=/usr/sbin/snort -A fast -D -q -c /etc/snort/snort.conf -i $iface" | sudo tee -a /etc/systemd/system/snort.service 
-echo "ExecStop=/bin/kill -SIGINT $MAINPID" | sudo tee -a /etc/systemd/system/snort.service
+echo 'ExecStop=/bin/kill -SIGINT $MAINPID' | sudo tee -a /etc/systemd/system/snort.service
 echo "Restart=on-failure" | sudo tee -a /etc/systemd/system/snort.service
 echo "" | sudo tee -a /etc/systemd/system/snort.service
 echo "" | sudo tee -a /etc/systemd/system/snort.service
