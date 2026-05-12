@@ -51,7 +51,7 @@ sudo touch /etc/snort/rules/black_list.rules
 sudo touch /etc/snort/rules/local.rules
 echo "Please Enter your network address: "
 read net
-sudo sed -i 's|^ipvar HOME_NET any|ipvar HOME_NET $net/24|' /etc/snort/snort.conf
+sudo sed -i "s|^ipvar HOME_NET any|ipvar HOME_NET $net/24|" /etc/snort/snort.conf
 sudo sed -i 's/^ipvar EXTERNAL_NET any/ipvar EXTERNAL_NET !$HOME_NET/' /etc/snort/snort.conf
 sudo sed -i 's|var RULE_PATH.*|var RULE_PATH /etc/snort/rules|' /etc/snort/snort.conf
 sudo sed -i 's|var SO_RULE_PATH.*|var SO_RULE_PATH /etc/snort/so_rules|' /etc/snort/snort.conf
@@ -72,7 +72,7 @@ echo "##################################"
 echo "Testing snort by adding a demo rule"
 echo "####################################"
 sleep 5
-echo "alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Test Ping";sid:1000001;)" | sudo tee /etc/snort/rules/local.rules
+echo 'alert icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Test Ping";sid:1000001;)' | sudo tee /etc/snort/rules/local.rules
 echo "Please enter the interface to monitor:"
 read iface
 sudo snort -A console -i $iface -c /etc/snort/snort.conf &> ~/test.log
@@ -102,7 +102,7 @@ echo "[Service]" | sudo tee -a /etc/systemd/system/snort.service
 echo "Type=simple" | sudo tee -a /etc/systemd/system/snort.service
 echo "User=root" | sudo tee -a /etc/systemd/system/snort.service
 echo "Group=root" | sudo tee -a /etc/systemd/system/snort.service
-echo "ExecStart=/usr/sbin/snort -A fast -D -q -c /etc/snort/snort.conf -i ens160" | sudo tee -a /etc/systemd/system/snort.service 
+echo "ExecStart=/usr/sbin/snort -A fast -D -q -c /etc/snort/snort.conf -i $iface" | sudo tee -a /etc/systemd/system/snort.service 
 echo "ExecStop=/bin/kill -SIGINT $MAINPID" | sudo tee -a /etc/systemd/system/snort.service
 echo "Restart=on-failure" | sudo tee -a /etc/systemd/system/snort.service
 echo "" | sudo tee -a /etc/systemd/system/snort.service
