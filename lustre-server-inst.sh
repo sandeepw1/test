@@ -1,7 +1,7 @@
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
 sudo setenforce 0
-sudo sed -i 's/^SELINUX=Enforcing/SELINUX=disabled/' /etc/selinux/config
+sudo sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 read -p "Enter The hostname: " hname
 sudo hostnamectl set-hostname $hname
 sudo yum install epel-release -y
